@@ -18,6 +18,8 @@ function Dashboard() {
 
   // Edit task
   const [editTask, setEditTask] = useState(null)
+  const [search, setSearch] = useState('')
+  const [filter, setFilter] = useState('all')
 
   // Fetch all tasks
   useEffect(() => {
@@ -106,8 +108,20 @@ function Dashboard() {
     navigate('/login')
   }
 
-  const pendingTasks = tasks.filter(t => t.status === 'pending')
-  const completedTasks = tasks.filter(t => t.status === 'completed')
+const filteredTasks = tasks.filter(task => {
+  const matchesSearch = task.title.toLowerCase().includes(search.toLowerCase()) ||
+    task.description.toLowerCase().includes(search.toLowerCase())
+
+  const matchesFilter =
+    filter === 'all' ? true :
+    filter === 'pending' ? task.status === 'pending' :
+    task.status === 'completed'
+
+  return matchesSearch && matchesFilter
+})
+
+const pendingTasks = filteredTasks.filter(t => t.status === 'pending')
+const completedTasks = filteredTasks.filter(t => t.status === 'completed')
 
   return (
     <div style={styles.container}>
@@ -208,19 +222,40 @@ function Dashboard() {
             </form>
           </div>
         )}
-
+        {/* Search and Filter */}
+        <div style={styles.searchRow}>
+          <input
+            style={styles.searchInput}
+            type="text"
+            placeholder="🔍 Search tasks..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+          <select
+            style={styles.select}
+            value={filter}
+            onChange={e => setFilter(e.target.value)}
+          >
+            <option value="all">All Tasks</option>
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
         {/* Task List */}
         {loading ? (
           <p style={styles.message}>Loading tasks...</p>
         ) : error ? (
           <p style={styles.errorMsg}>{error}</p>
-        ) : tasks.length === 0 ? (
-          <div style={styles.emptyState}>
-            <p style={styles.emptyText}>No tasks yet!</p>
-            <p style={styles.emptySubtext}>Click "Add New Task" to get started</p>
-          </div>
-        ) : (
-          <div>
+        ) : filteredTasks.length === 0 ? (
+            <div style={styles.emptyState}>
+              <p style={styles.emptyText}>
+                {tasks.length === 0 ? 'No tasks yet!' : 'No tasks match your search'}</p>
+              <p style={styles.emptySubtext}>
+                {tasks.length === 0 ? 'Click "Add New Task" to get started' : 'Try a different search or filter'}
+              </p>
+      </div>):(
+        <div>
+            
             {/* Pending Tasks */}
             {pendingTasks.length > 0 && (
               <div>
@@ -375,7 +410,33 @@ const styles = {
     color: '#444',
     marginBottom: '12px',
     marginTop: '24px'
-  }
+  },
+  searchRow: {
+  display: 'flex',
+  gap: '12px',
+  marginBottom: '20px',
+  flexWrap: 'wrap'
+},
+searchInput: {
+  flex: 1,
+  padding: '10px 14px',
+  borderRadius: '8px',
+  border: '1px solid #ddd',
+  fontSize: '14px',
+  outline: 'none',
+  minWidth: '200px',
+  boxSizing: 'border-box'
+},
+select: {
+  padding: '10px 14px',
+  borderRadius: '8px',
+  border: '1px solid #ddd',
+  fontSize: '14px',
+  outline: 'none',
+  backgroundColor: '#fff',
+  cursor: 'pointer',
+  color: '#444'
+}
 }
 
 export default Dashboard
