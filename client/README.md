@@ -1,4 +1,9 @@
+## 🌐 Live Demo
+
+Frontend: https://task-manager-bice-three-81.vercel.app
+Backend:  https://task-manager-api-fu5y.onrender.com
 # React + Vite
+
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
