@@ -13,6 +13,13 @@ app.use(cors())
 app.use(express.json())
 
 // Routes
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://task-manager-bice-three-81.vercel.app'
+  ],
+  credentials: true
+}))
 app.use('/api/auth', require('./routes/auth'))
 app.use('/api/tasks', require('./routes/tasks'))
 
